@@ -1,6 +1,7 @@
 from control import LeftTabWidget
 from QShow import Show
-from PyQt5.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QDockWidget, QTextEdit, QToolBar, QMenu, QAction
+from PyQt5.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QDockWidget, QTextEdit, QToolBar, QMenu, \
+                            QAction, QInputDialog
 from PyQt5.QtGui import QPixmap, QFont, QCursor
 from PyQt5.QtCore import Qt, QPoint
 import sys
@@ -22,10 +23,15 @@ class MainWindow(QMainWindow):
         items.customContextMenuRequested[QPoint].connect(lambda: self.showContextMenu(items))
         menu = QMenu(self)
         items.contextMenu = menu
+
         clear = QAction('Origin', self)
         clear.triggered.connect(self.Show_Clear)
-        items.contextMenu.addAction(clear)
+        alpha = QAction('alpha', self)
+        alpha.triggered.connect(self.Change_Alpha)
+        beta = QAction('beta', self)
+        beta.triggered.connect(self.Change_Beta)
 
+        items.contextMenu.addActions([clear, alpha, beta])
         items.setStyleSheet('font-size: 12px;font-family: "宋体";background-color:rgba(255, 255, 255, 230)')
         layout = QHBoxLayout()
         items.setWidget(self.Show)
@@ -50,6 +56,18 @@ class MainWindow(QMainWindow):
 
     def Show_Clear(self):
         self.Show.Clear()
+
+    def Change_Alpha(self):
+        value, ok = QInputDialog.getText(self, '改变alpha', 'cur_alpha', text=str(self.Show.alpha))
+        if ok:
+            self.Show.alpha = eval(value)
+            self.Show.Setting_Save()
+
+    def Change_Beta(self):
+        value, ok = QInputDialog.getText(self, '改变beta', 'cur_beta', text=str(self.Show.beta))
+        if ok:
+            self.Show.beta = eval(value)
+            self.Show.Setting_Save()
 
     def closeEvent(self, a0) -> None:
         self.Control.Drawer.is_route = True

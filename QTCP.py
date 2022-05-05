@@ -18,13 +18,14 @@ class MyPushButton(QPushButton):
         self.setFont(QFont('宋体', 12))
         self.name = name
         self.A = 2
-        self.k = 0 if self.name == '↑' else -5 if self.name == '←' else 5 if self.name == '→' else None
+        self.k = 0 if self.name == '↑' else 5 if self.name == '←' else -5 if self.name == '→' else None
         if self.k is not None:
             self.setText('{}({},{})'.format(self.name, self.A, self.k))
         else:
             self.setText(self.name)
         self.sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         self.sizePolicy.setWidthForHeight(True)
+        self.setFocusPolicy(Qt.NoFocus)
         self.setSizePolicy(self.sizePolicy)
 
     def mousePressEvent(self, e: QtGui.QMouseEvent) -> None:
@@ -208,9 +209,23 @@ class Socket(QtWidgets.QDialog):
     def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
         pass
 
-    def keyPressEvent(self, event):
+    def keyPressEvent(self, event) -> None:
         if str(event.key()) == '16777220':
             self.Socket_Init()
+
+    def keyReleaseEvent(self, event):
+        if str(event.key()) == '87':
+            self.Forward()
+        elif str(event.key()) == '65' or str(event.key()) == '16777234':
+            self.Left()
+        elif str(event.key()) == '68' or str(event.key()) == '16777236':
+            self.Right()
+        elif str(event.key()) == '32':
+            self.Stop()
+        elif str(event.key()) == '16777235':
+            self.Up(1)
+        elif str(event.key()) == '16777237':
+            self.Down(1)
 
 
 # 运行程序

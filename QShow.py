@@ -1,8 +1,10 @@
 import sys
+import os
 import time
 import random
 import numpy as np
 import matplotlib
+import pickle
 matplotlib.use('Qt5Agg')
 import matplotlib.pyplot as plt
 # from PyQt5 import QtCore, QtWidgets, QtGui
@@ -18,7 +20,7 @@ class Show(QtWidgets.QDialog):
         self.period = 1
         self.num = 20
         self.X, self.Y, self.Z, self.R, self.V = [0], [0], [0], [90], [np.zeros((3,))]
-        self.A, self.k, self.theta, self.alpha = 0, 0, 0, 0.05 * np.pi
+        self.A, self.k, self.theta, self.alpha, self.beta = 0, 0, 0, 0.05 * np.pi, 1
         self.vx, self.vy, self.vz = 0, 0, 0
         self.Close = False
         self.clear = False
@@ -31,9 +33,28 @@ class Show(QtWidgets.QDialog):
         layout.addWidget(self.Stream)
         self.setLayout(layout)
 
+        self.Setting_Init()
+
         thread = QThread(self)
         thread.run = self.Handle_Data
         thread.start()
+
+    def Setting_Init(self):
+        if os.path.exists('./Show.txt'):
+            with open('./Show.txt', 'rb') as f:
+                settings = pickle.load(f)
+                self.alpha = settings['alpha']
+                self.beta = settings['beta']
+                print(1)
+        else:
+            with open('./Show.txt', 'wb') as f:
+                settings = {'alpha': self.alpha, 'beta': self.beta}
+                pickle.dump(settings, f)
+
+    def Setting_Save(self):
+        with open('./Show.txt', 'wb') as f:
+            settings = {'alpha': self.alpha, 'beta': self.beta}
+            pickle.dump(settings, f)
 
     def Handle_Data(self):
         while 1:
@@ -42,9 +63,9 @@ class Show(QtWidgets.QDialog):
             if self.A == 0:
                 self.vx, self.vy, self.vz = 0, 0, 0
             else:
-                self.theta -= self.k * self.alpha
-                self.vx = self.A * np.cos(self.theta)
-                self.vy = self.A * np.sin(self.theta)
+                self.theta += self.k * self.alpha
+                self.vx = self.beta * self.A * np.cos(self.theta)
+                self.vy = self.beta * self.A * np.sin(self.theta)
                 self.vz = 0
             v, r = np.array([self.vx, self.vy, self.vz]), 0
             if (v == 0).all():

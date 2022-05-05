@@ -20,6 +20,7 @@ class Drawer(QDialog):
         self.time = QTimer(self)
         self.time.timeout.connect(self.Straight_Line)
         self.A_k = []
+        self.value_range = [10, 20, 30, 40, 50, 60, 70, 80]
         self.press = False
         self.press_pos = None
         self.press_begin = None
@@ -194,7 +195,7 @@ class Drawer(QDialog):
         actions[np.logical_and(actions < 0, y > 0)] = np.pi + actions[np.logical_and(actions < 0, y > 0)]
         actions[np.logical_and(actions < 0, y < 0)] = 2 * np.pi + actions[np.logical_and(actions < 0, y < 0)]
         actions = actions * 180 / np.pi
-        actions = actions[1:] - actions[:-1]
+        actions = actions[:-1] - actions[1:]
         actions[actions >= 180] = actions[actions >= 180] - 360
         actions[actions <= -180] = 360 + actions[actions <= -180]
         # actions[np.logical_or(np.logical_or(actions == np.inf, actions == -np.inf), np.isnan(actions))] = 0
@@ -208,32 +209,38 @@ class Drawer(QDialog):
         lis[len(path) - 1] = [a[len(path) - 1], k[len(path) - 1]]
         while j < len(path) - 2:
             # 前进
-            if 0 < actions[j] <= 5 or -5 <= actions[j] <= 0:
+            if -self.value_range[0] <= actions[j] <= self.value_range[0]:
                 a[j + 1] = self.A_k[0][0]
                 k[j + 1] = self.A_k[0][1]
             # 第一档
-            elif 5 < actions[j] <= 15 or -15 < actions[j] <= -5:
+            elif self.value_range[0] < actions[j] <= self.value_range[1] or\
+                    -self.value_range[1] < actions[j] <= -self.value_range[0]:
                 a[j + 1] = self.A_k[1][0]
                 k[j + 1] = self.A_k[1][1] * (abs(actions[j]) / actions[j])
-            elif 15 < actions[j] <= 25 or -25 < actions[j] <= 15:
+            elif self.value_range[1] < actions[j] <= self.value_range[2] or\
+                    -self.value_range[2] < actions[j] <= self.value_range[1]:
                 a[j + 1] = self.A_k[2][0]
                 k[j + 1] = self.A_k[2][1] * (abs(actions[j]) / actions[j])
-            elif 25 < actions[j] <= 35 or -35 < actions[j] <= -25:
+            elif self.value_range[2] < actions[j] <= self.value_range[3] or\
+                    -self.value_range[3] < actions[j] <= -self.value_range[2]:
                 a[j + 1] = self.A_k[3][0]
                 k[j + 1] = self.A_k[3][1] * (abs(actions[j]) / actions[j])
-            elif 35 < actions[j] <= 45 or -45 < actions[j] <= -35:
+            elif self.value_range[3] < actions[j] <= self.value_range[4] or\
+                    -self.value_range[4] < actions[j] <= -self.value_range[3]:
                 a[j + 1] = self.A_k[4][0]
                 k[j + 1] = self.A_k[4][1] * (abs(actions[j]) / actions[j])
-            elif 45 < actions[j] <= 55 or -55 < actions[j] <= -45:
+            elif self.value_range[4] < actions[j] <= self.value_range[5] or\
+                    -self.value_range[5] < actions[j] <= -self.value_range[4]:
                 a[j + 1] = self.A_k[5][0]
                 k[j + 1] = self.A_k[5][1] * (abs(actions[j]) / actions[j])
-            elif 55 < actions[j] <= 65 or -65 < actions[j] <= -55:
+            elif self.value_range[5] < actions[j] <= self.value_range[6] or\
+                    -self.value_range[6] < actions[j] <= -self.value_range[5]:
                 a[j + 1] = self.A_k[6][0]
                 k[j + 1] = self.A_k[6][1] * (abs(actions[j]) / actions[j])
-            elif 5 < actions[j] <= 75 or -75 < actions[j] <= -65:
+            elif self.value_range[6] < actions[j] <= self.value_range[7] or -self.value_range[7] < actions[j] <= -self.value_range[6]:
                 a[j + 1] = self.A_k[7][0]
                 k[j + 1] = self.A_k[7][1] * (abs(actions[j]) / actions[j])
-            elif 75 < actions[j] or actions[j] < -75:
+            elif self.value_range[7] < actions[j] or actions[j] < -self.value_range[7]:
                 a[j + 1] = self.A_k[8][0]
                 k[j + 1] = self.A_k[8][1] * (abs(actions[j]) / actions[j])
             lis[j + 1] = [a[j + 1], k[j + 1]]
