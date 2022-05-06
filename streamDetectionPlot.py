@@ -23,7 +23,8 @@ class streamDetectionPlot(FigureCanvas):
         # plt.ion()
         # initial the plot variable
         self.pause = False
-        self.num = 50
+        self.num = 80
+        self.fontsize = 12
         self.x = X.copy()
         self.y = Y.copy()
         self.z = Z.copy()
@@ -65,9 +66,9 @@ class streamDetectionPlot(FigureCanvas):
         self.cur_label = "x:{:.5f}\ny:{:.5f}\nz:{:.5f}\nv:{:.5f}".format(self.x[-1], self.y[-1], self.z[-1],
                                                                          np.linalg.norm(self.v[-1]))
         self.last_label = self.cur_label
-        self.last_text = self.loadingGraph.text(self.x[-1], self.y[-1], self.z[-1], self.cur_label, fontsize=8,
+        self.last_text = self.loadingGraph.text(self.x[-1], self.y[-1], self.z[-1], self.cur_label, fontsize=self.fontsize,
                                                 horizontalalignment='right', verticalalignment='bottom')
-        self.cur_text = self.loadingGraph.text(self.x[-1], self.y[-1], self.z[-1], self.cur_label, fontsize=8,
+        self.cur_text = self.loadingGraph.text(self.x[-1], self.y[-1], self.z[-1], self.cur_label, fontsize=self.fontsize,
                                                horizontalalignment='right', verticalalignment='bottom')
 
         self.Trace_Line, = self.loadingGraph.plot(self.x, self.y, self.z, color="red", label="LoadingValue")

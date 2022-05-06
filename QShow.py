@@ -45,7 +45,6 @@ class Show(QtWidgets.QDialog):
                 settings = pickle.load(f)
                 self.alpha = settings['alpha']
                 self.beta = settings['beta']
-                print(1)
         else:
             with open('./Show.txt', 'wb') as f:
                 settings = {'alpha': self.alpha, 'beta': self.beta}

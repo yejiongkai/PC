@@ -21,6 +21,7 @@ class Drawer(QDialog):
         self.time.timeout.connect(self.Straight_Line)
         self.A_k = []
         self.value_range = [10, 20, 30, 40, 50, 60, 70, 80]
+        self.straight_points = []
         self.press = False
         self.press_pos = None
         self.press_begin = None
@@ -101,10 +102,12 @@ class Drawer(QDialog):
     def mousePressEvent(self, event):
         if not self.is_route:
             self.press = True
-            self.press_pos = event.pos()
-            self.press_begin = event.pos()
-            self.plan_path.clear()
-            self.plan_path.moveTo(event.pos())
+            if not self.press_Straight:
+                self.plan_path.clear()
+                self.press_pos = event.pos()
+                self.press_begin = event.pos()
+                self.plan_path.clear()
+                self.plan_path.moveTo(event.pos())
             self.update()
 
     def Straight_Line(self):
@@ -113,15 +116,18 @@ class Drawer(QDialog):
             self.plan_path.clear()
             self.plan_path.moveTo(self.press_begin)
             self.plan_path.lineTo(self.press_pos)
+            self.straight_points.append(self.press_begin)
             self.update()
 
     def mouseMoveEvent(self, event):
-        if self.press:
+        if self.press or self.press_Straight:
             self.press_pos = event.pos()
             if not self.is_route:
                 if self.press_Straight:
                     self.plan_path.clear()
-                    self.plan_path.moveTo(self.press_begin)
+                    self.plan_path.moveTo(self.straight_points[0])
+                    for i in range(1, len(self.straight_points)):
+                        self.plan_path.lineTo(self.straight_points[i])
                     self.plan_path.lineTo(self.press_pos)
                     self.update()
                 else:
@@ -134,10 +140,21 @@ class Drawer(QDialog):
 
     def mouseReleaseEvent(self, a0: QtGui.QMouseEvent) -> None:
         if not self.is_route:
-            self.press = False
-            self.press_Straight = False
-            self.press_begin = None
-            self.press_pos = None
+            if self.press_Straight:
+                if a0.button() == Qt.RightButton:
+                    self.straight_points = []
+                    self.press = False
+                    self.press_Straight = False
+                    self.press_begin = None
+                    self.press_pos = None
+                else:
+                    self.press_begin = self.press_pos
+                    self.straight_points.append(self.press_begin)
+            else:
+                self.press = False
+                self.press_Straight = False
+                self.press_begin = None
+                self.press_pos = None
             self.plan_path = self.stroker.createStroke(self.plan_path)
             self.update()
 
