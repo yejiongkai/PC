@@ -72,6 +72,8 @@ class Socket(QtWidgets.QDialog):
         self.down_left = QPushButton('Down_L', self)
         self.up_right = QPushButton('Up_R', self)
         self.down_right = QPushButton('Down_R', self)
+        self.bionic_on = MyPushButton('B_On', self)
+        self.bionic_off = MyPushButton('B_Off', self)
 
         self.combobox = QtWidgets.QComboBox(self)
         self.combobox.setFixedHeight(30)
@@ -108,6 +110,10 @@ class Socket(QtWidgets.QDialog):
         h1.addWidget(self.forward)
         h1.addWidget(self.right)
         h1.addWidget(self.stop)
+        b_layout = QVBoxLayout()
+        b_layout.addWidget(self.bionic_on)
+        b_layout.addWidget(self.bionic_off)
+        h1.addLayout(b_layout)
         u_d_l = QVBoxLayout()
         u_d_l.addWidget(self.up_left)
         u_d_l.addWidget(self.down_left)
@@ -128,6 +134,8 @@ class Socket(QtWidgets.QDialog):
         self.left.clicked.connect(self.Left)
         self.right.clicked.connect(self.Right)
         self.stop.clicked.connect(self.Stop)
+        self.bionic_on.clicked.connect(self.Bionic_On)
+        self.bionic_off.clicked.connect(self.Bionic_Off)
         self.up_left.clicked.connect(lambda: self.Up(0))
         self.down_left.clicked.connect(lambda: self.Down(0))
         self.up_right.clicked.connect(lambda: self.Up(1))
@@ -202,6 +210,12 @@ class Socket(QtWidgets.QDialog):
         self.Socket_Send.emit((str((1 << 0, 'Down_{}'.format(n))) + '\n'))
         # if self.Socket.state() == 3:
         #     self.Socket.write((str((1 << 0, 'Down_{}'.format(n))) + '\n').encode('utf-8'))
+
+    def Bionic_On(self):
+        self.Socket_Send.emit((str((1 << 8, True)) + '\n'))
+
+    def Bionic_Off(self):
+        self.Socket_Send.emit((str((1 << 8, False)) + '\n'))
 
     def Line_Clear(self):
         self.TextEdit.clear()

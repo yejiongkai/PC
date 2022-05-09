@@ -202,10 +202,13 @@ class streamDetectionPlot(FigureCanvas):
         self.xRange = [min(self.x), max(self.x)]  # datetime style
         self.yRange = [min(self.y), max(self.y)]
         self.zRange = [min(self.z), max(self.z)]
-        self.loadingGraph.set_ylim(
-            min(self.yRange) - 10, max(self.yRange) + 10)
-        self.loadingGraph.set_xlim(
-            min(self.xRange) - 10, max(self.xRange) + 10)
+        range = [min(self.xRange[0], self.yRange[0]), max(self.xRange[1], self.yRange[1])]
+        # self.loadingGraph.set_ylim(
+        #     min(self.yRange) - 10, max(self.yRange) + 10)
+        # self.loadingGraph.set_xlim(
+        #     min(self.xRange) - 10, max(self.xRange) + 10)
+        self.loadingGraph.set_ylim(range[0] - 10, range[1] + 10)
+        self.loadingGraph.set_xlim(range[0] - 10, range[1] + 10)
         self.loadingGraph.set_zlim(
             min(self.zRange) - 10, max(self.zRange) + 10)
         self.loadingGraph.relim()

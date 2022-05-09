@@ -59,7 +59,7 @@ class Control_Manager(object):
         self.server.listen(5)
         self.inputs.append(self.server)
         while self.inputs:
-            print(len(self.inputs), len(self.outputs))  # 在这里加停止命令 需要把视觉、巡航相关参数也调零
+            # print(len(self.inputs), len(self.outputs))  # 在这里加停止命令 需要把视觉、巡航相关参数也调零
             rs, ws, es = select.select(self.inputs, self.outputs, self.inputs)
             for s in rs:
                 if s is self.server:
@@ -200,7 +200,6 @@ class Control_Manager(object):
                         self.Servo_Send(*self.arg)    # 跟踪算法
                     self.cur_mode, self.arg = None, None
                     continue
-            
 
 
 if __name__ == '__main__':
