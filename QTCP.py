@@ -44,6 +44,9 @@ class MyPushButton(QPushButton):
         if e.buttons() == QtCore.Qt.LeftButton:
             self.clicked.emit()
 
+    def Update(self):
+        self.setText('{}({},{})'.format(self.name, self.A, self.k))
+
 
 class Socket(QtWidgets.QDialog):
     Socket_Connect = pyqtSignal()
@@ -94,10 +97,13 @@ class Socket(QtWidgets.QDialog):
         clear = QAction('Clear', self)
         clear.triggered.connect(self.Line_Clear)
         self.TextEdit.contextMenu.addAction(clear)
+        self.TextEdit.setTextInteractionFlags(Qt.NoTextInteraction)
+        # self.TextEdit.setFocusPolicy(Qt.NoFocus)
 
         self.Connect = QtWidgets.QPushButton('连接', self)
         self.Connect.setFixedHeight(30)
         self.Connect.clicked.connect(self.Socket_Init)
+        self.Connect.setFocusPolicy(Qt.NoFocus)
 
         seq = 4
         # 设置布局
@@ -228,18 +234,51 @@ class Socket(QtWidgets.QDialog):
             self.Socket_Init()
 
     def keyReleaseEvent(self, event):
-        if str(event.key()) == '87':
-            self.Forward()
-        elif str(event.key()) == '65' or str(event.key()) == '16777234':
-            self.Left()
-        elif str(event.key()) == '68' or str(event.key()) == '16777236':
-            self.Right()
-        elif str(event.key()) == '32':
-            self.Stop()
-        elif str(event.key()) == '16777235':
-            self.Up(1)
-        elif str(event.key()) == '16777237':
-            self.Down(1)
+        # ctrl + 单键 优先级高
+        if event.modifiers() == Qt.ControlModifier:
+            if event.key() == Qt.Key_W:
+                if self.forward.A < 5:
+                    self.forward.A += 1
+                if self.left.A < 5:
+                    self.left.A += 1
+                if self.right.A < 5:
+                    self.right.A += 1
+            elif event.key() == Qt.Key_S:
+                if self.forward.A > 0:
+                    self.forward.A -= 1
+                if self.left.A > 0:
+                    self.left.A -= 1
+                if self.right.A > 0:
+                    self.right.A -= 1
+            elif event.key() == Qt.Key_A:
+                if self.left.k < 9:
+                    self.left.k += 1
+                else:
+                    self.left.k = 5
+            elif event.key() == Qt.Key_D:
+                if self.right.k > -9:
+                    self.right.k -= 1
+                else:
+                    self.right.k = -5
+            self.forward.Update()
+            self.left.Update()
+            self.right.Update()
+
+        else:
+            if str(event.key()) == '87':
+                self.Forward()
+            elif str(event.key()) == '65' or str(event.key()) == '16777234':
+                self.Left()
+            elif str(event.key()) == '68' or str(event.key()) == '16777236':
+                self.Right()
+            elif str(event.key()) == '32':
+                self.Stop()
+            elif str(event.key()) == '16777235':
+                self.Up(1)
+            elif str(event.key()) == '16777237':
+                self.Down(1)
+
+
 
 
 # 运行程序
