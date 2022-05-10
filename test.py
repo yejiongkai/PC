@@ -1,5 +1,6 @@
 import serial
 import serial.tools.list_ports
+import random
 import socket, select, queue, time
 import threading
 import struct
@@ -13,6 +14,7 @@ class Control_Manager(object):
         self.route = None
         self.cur_route = 0
         self.is_route = False
+        self.is_bionic = False
         self.recv_false = 0
         self.Servo_serial = None
         self.k210_serial = None
@@ -25,6 +27,14 @@ class Control_Manager(object):
     def run(self):
         self.thread.start()
         self.Server_Init()
+
+    def Bionic(self):
+        time.sleep(random.random() + 1)
+        self.Servo_Send(random.randint(2, 5),
+                        random.choice([-1, 1])*random.choices([0, 5, 6, 7, 8],
+                        weights=[0.3, 0.3, 0.2, 0.1, 0.1])[0])
+        time.sleep(random.random() + 1.5)
+        self.Servo_Send(0, 0)
         
     def Serial_Recv(self):
         return None
@@ -67,6 +77,7 @@ class Control_Manager(object):
                     print('connecting from', address)
                     connection.setblocking(0)
                     self.inputs.append(connection)
+                    self.outputs.append(connection)
                     self.message_queues[connection] = queue.Queue()
                 else:
                     try:
@@ -87,6 +98,8 @@ class Control_Manager(object):
                             self.mode |= (1 << 1)
                         elif self.cur_mode == 1 << 0:
                             self.mode |= (1 << 0)
+                        elif self.cur_mode == 1 << 8:
+                            self.mode |= (1 << 8)
                         # self.message_queues[s].put(data)
                         if s not in self.outputs:
                             self.outputs.append(s)
@@ -127,6 +140,17 @@ class Control_Manager(object):
     def Processing_Command(self):
         while True:
             time.sleep(0.01)
+            if self.cur_mode is None:
+                if self.sep == 1 << 10:
+                    if self.mode == 0 and self.is_bionic:
+                        self.mode |= (1 << 8)
+                else:
+                    self.sep += 1
+            else:
+                self.sep = 0
+                if self.cur_mode != 1 << 8:
+                    self.mode &= ~(1 << 8)
+
             # 视觉命令启动
             if self.mode & (1 << 2):
                 if self.cur_mode == 1 << 2:
@@ -200,6 +224,19 @@ class Control_Manager(object):
                         self.Servo_Send(*self.arg)    # 跟踪算法
                     self.cur_mode, self.arg = None, None
                     continue
+
+            if self.mode & (1 << 8):
+                if self.cur_mode == 1 << 8:
+                    if self.arg is False:
+                        self.mode &= ~(1 << 8)
+                        self.is_bionic = False
+                        self.cur_mode, self.arg = None, None
+                        continue
+                    else:
+                        self.is_bionic = True
+                        self.cur_mode, self.arg = None, None
+                self.Bionic()
+                continue
 
 
 if __name__ == '__main__':
