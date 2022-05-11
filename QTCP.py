@@ -279,8 +279,6 @@ class Socket(QtWidgets.QDialog):
                 self.Down(1)
 
 
-
-
 # 运行程序
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)

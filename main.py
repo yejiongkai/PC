@@ -36,6 +36,7 @@ class MainWindow(QMainWindow):
         layout = QHBoxLayout()
         items.setWidget(self.Show)
         bar = QToolBar()
+        bar.setStyleSheet('background-color:rgba(225, 225, 225, 12)')
         items.setTitleBarWidget(bar)
         items.setFeatures(
             QDockWidget.DockWidgetClosable | QDockWidget.DockWidgetFloatable | QDockWidget.DockWidgetMovable)
