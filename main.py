@@ -42,6 +42,7 @@ class MainWindow(QMainWindow):
             QDockWidget.DockWidgetClosable | QDockWidget.DockWidgetFloatable | QDockWidget.DockWidgetMovable)
 
         items.setFloating(False)
+        items.setMinimumSize(200, 200)
         self.setCentralWidget(self.Control)
         self.addDockWidget(Qt.RightDockWidgetArea, items)
 
