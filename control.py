@@ -1,13 +1,14 @@
 import sys
 import numpy as np
 from PyQt5.QtWidgets import QListWidget, QStackedWidget, QDockWidget, QListWidgetItem, QWidget, \
-                            QHBoxLayout, QApplication, QFrame
+    QHBoxLayout, QApplication, QFrame
 from PyQt5.QtCore import QSize, Qt
 from QSerial import Serial
 from Route import Drawer
 from QTCP import Socket
 from QTrack import Track
 from QShow import Show
+from QWave import Wave
 
 
 class LeftTabWidget(QFrame):
@@ -55,6 +56,8 @@ class LeftTabWidget(QFrame):
 
         self.Show = Show()
 
+        self.Wave = Wave()
+
         self.Track = Track()
         self.Track.vision.connect(self.Socket_Send)
 
@@ -82,6 +85,7 @@ class LeftTabWidget(QFrame):
     def Socket_Disconnect(self):
         self.socket = None
         self.Show.A, self.Show.k = 0, 0
+        self.Wave.A, self.Wave.k = 0, 0
 
     def Socket_Send(self, value: str):
         if self.socket and self.socket.state() == 3:
@@ -104,9 +108,11 @@ class LeftTabWidget(QFrame):
                     except SyntaxError as e:
                         return
                     self.Track.position.emit(arg)
-                if isinstance(data[1], tuple) and len(data[1]) == 2:
+                if isinstance(data[1], tuple) and len(data[1]) == 3:
                     # self.num += 1
-                    self.Show.A, self.Show.k = data[1]
+                    self.Show.A, self.Show.k, _ = data[1]
+                    self.Wave.A, self.Wave.k, _ = data[1]
+                    self.Socket.A, self.Socket.k, self.Socket.c = data[1]
                     # if k == 0:
                     #     self.theta = self.theta + k * self.alpha
                     #     print(self.theta)

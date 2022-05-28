@@ -9,6 +9,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from PyQt5 import QtCore, QtWidgets, QtGui
 import matplotlib.pyplot as plt
+import numpy as np
 import sys
 
 
@@ -19,6 +20,7 @@ class My_Main_window(QtWidgets.QDialog):
 
         # 几个QWidgets
         self.figure = Figure()
+        self.ax = self.figure.add_axes([0.1, 0.1, 0.8, 0.8])
         self.canvas = FigureCanvas(self.figure)
         self.button_plot = QtWidgets.QPushButton("绘制")
 
@@ -33,10 +35,23 @@ class My_Main_window(QtWidgets.QDialog):
 
     # 连接的绘制的方法
     def plot_(self):
-        self.figure.clear()
-        ax = self.figure.add_axes([0.1, 0.1, 0.8, 0.8], projection='3d')
-        ax.plot(xs=[1, 2, 3, 4, 5], ys=[2,3,4,5,6], zs=[3,4,5,6,7])
-        self.canvas.draw()
+        thread = QtCore.QThread(self)
+        thread.run = self.Plot
+        thread.start()
+
+    def Plot(self):
+        fun = lambda k, a, x, t: (np.power(x, 2)) * np.sin(a * t) + 0.5 * k *x
+        while 1:
+            for t in np.linspace(0, 2*np.pi, 100):
+                x = np.linspace(0, 2*np.pi, 100)
+                self.ax.clear()
+                self.ax.plot(x, fun(20, 5, x, t))
+                self.ax.set_ylim(-50, 50)
+                self.ax.set_xlim(0, 2*np.pi + 2)
+                self.ax.relim()
+                self.ax.autoscale_view()
+                self.canvas.draw()
+                plt.pause(0.01)
 
 
 # 运行程序

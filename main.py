@@ -1,7 +1,8 @@
 from control import LeftTabWidget
 from QShow import Show
+from QWave import Wave
 from PyQt5.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QDockWidget, QTextEdit, QToolBar, QMenu, \
-                            QAction, QInputDialog
+                            QAction, QInputDialog, QSizePolicy
 from PyQt5.QtGui import QPixmap, QFont, QCursor
 from PyQt5.QtCore import Qt, QPoint
 import sys
@@ -13,16 +14,21 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__(parent)
         self.Control = LeftTabWidget()
         self.Show = self.Control.Show
+        self.Wave = self.Control.Wave
 
         self.setup_ui()
 
     def setup_ui(self):
         self.setStyleSheet('font-size: 20px;font-family: "New Roman"')
-        items = QDockWidget(self)
-        items.setContextMenuPolicy(3)
-        items.customContextMenuRequested[QPoint].connect(lambda: self.showContextMenu(items))
+        self.setGeometry(400, 400, 1000, 700)
+        show_item = QDockWidget(self)
+        show_item.setContextMenuPolicy(3)
+        show_item.customContextMenuRequested[QPoint].connect(lambda: self.showContextMenu(show_item))
         menu = QMenu(self)
-        items.contextMenu = menu
+        show_item.contextMenu = menu
+
+        wave_item = QDockWidget(self)
+        wave_item.setMinimumSize(400, 400)
 
         clear = QAction('Origin', self)
         clear.triggered.connect(self.Show_Clear)
@@ -31,20 +37,33 @@ class MainWindow(QMainWindow):
         beta = QAction('beta', self)
         beta.triggered.connect(self.Change_Beta)
 
-        items.contextMenu.addActions([clear, alpha, beta])
-        items.setStyleSheet('font-size: 12px;font-family: "宋体";background-color:rgba(255, 255, 255, 230)')
+        show_item.contextMenu.addActions([clear, alpha, beta])
+        show_item.setStyleSheet('font-size: 12px;font-family: "宋体";background-color:rgba(255, 255, 255, 230)')
         layout = QHBoxLayout()
-        items.setWidget(self.Show)
+        show_item.setWidget(self.Show)
         bar = QToolBar()
-        bar.setStyleSheet('background-color:rgba(225, 225, 225, 12)')
-        items.setTitleBarWidget(bar)
-        items.setFeatures(
+        bar.setStyleSheet('background-color:rgba(0, 225, 225, 12)')
+        show_item.setTitleBarWidget(bar)
+        show_item.setFeatures(
             QDockWidget.DockWidgetClosable | QDockWidget.DockWidgetFloatable | QDockWidget.DockWidgetMovable)
 
-        items.setFloating(False)
-        items.setMinimumSize(200, 200)
+        wave_item.setStyleSheet('font-size: 12px;font-family: "宋体";background-color:rgba(255, 255, 255, 230)')
+        wave_item.setWidget(self.Wave)
+        w_bar = QToolBar()
+        w_bar.setStyleSheet('background-color:rgba(0, 225, 225, 12)')
+        wave_item.setTitleBarWidget(w_bar)
+        wave_item.setFeatures(
+            QDockWidget.DockWidgetClosable | QDockWidget.DockWidgetFloatable | QDockWidget.DockWidgetMovable)
+
+        show_item.setFloating(False)
+        show_item.setMinimumSize(200, 200)
+
+        wave_item.setFloating(False)
+        wave_item.setMinimumSize(200, 200)
+
         self.setCentralWidget(self.Control)
-        self.addDockWidget(Qt.RightDockWidgetArea, items)
+        self.addDockWidget(Qt.RightDockWidgetArea, show_item)
+        self.addDockWidget(Qt.RightDockWidgetArea, wave_item)
 
         self.setLayout(layout)
         self.setWindowTitle('主界面')

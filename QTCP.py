@@ -5,7 +5,7 @@ import serial.tools.list_ports
 from PyQt5.QtCore import Qt, pyqtSignal, QPoint, QSize, QThread, QTimer
 from PyQt5.QtGui import QPainter, QPainterPath, QColor, QPen, QFont, QCursor
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,\
-    QInputDialog, QMessageBox, QMenu, QAction
+    QInputDialog, QMessageBox, QMenu, QAction, QSlider
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtNetwork import QTcpSocket
 import sys
@@ -27,6 +27,7 @@ class MyPushButton(QPushButton):
         self.sizePolicy.setWidthForHeight(True)
         self.setFocusPolicy(Qt.NoFocus)
         self.setSizePolicy(self.sizePolicy)
+        # self.setMaximumSize(100, 100)
 
     def mousePressEvent(self, e: QtGui.QMouseEvent) -> None:
         if e.buttons() == QtCore.Qt.RightButton:
@@ -60,6 +61,7 @@ class Socket(QtWidgets.QDialog):
         self.setFont(self.font)
         self.Socket = QTcpSocket(self)
         self.Socket.disconnected.connect(self.Server_Disconnect)
+        self.A, self.k, self.c = 0, 0, 0
         self.UI_Init()
         self.recvable = True
         self.sendable = True
@@ -71,12 +73,21 @@ class Socket(QtWidgets.QDialog):
         self.left = MyPushButton('←', self)
         self.right = MyPushButton('→', self)
         self.stop = MyPushButton('⏹', self)
-        self.up_left = QPushButton('Up_L', self)
-        self.down_left = QPushButton('Down_L', self)
-        self.up_right = QPushButton('Up_R', self)
-        self.down_right = QPushButton('Down_R', self)
+        # self.up_left = QPushButton('Up_L', self)
+        # self.down_left = QPushButton('Down_L', self)
+        # self.up_right = QPushButton('Up_R', self)
+        # self.down_right = QPushButton('Down_R', self)
         self.bionic_on = MyPushButton('B_On', self)
         self.bionic_off = MyPushButton('B_Off', self)
+
+        self.splider = QSlider(Qt.Vertical, self)
+        self.splider.setPageStep(1)
+        self.splider.setRange(6, 12)
+        self.splider.setValue(12)
+        self.splider.setTickInterval(1)
+        self.splider.setTickPosition(QSlider.TicksRight)
+        self.splider.setTickInterval(1)
+        self.splider.valueChanged.connect(self.Splider_Change)
 
         self.combobox = QtWidgets.QComboBox(self)
         self.combobox.setFixedHeight(30)
@@ -112,22 +123,23 @@ class Socket(QtWidgets.QDialog):
         layout.addStretch(seq//4)
         h1 = QtWidgets.QHBoxLayout()
         h2 = QtWidgets.QHBoxLayout()
-        h1.addWidget(self.left)
-        h1.addWidget(self.forward)
-        h1.addWidget(self.right)
-        h1.addWidget(self.stop)
+        h1.addWidget(self.left, seq)
+        h1.addWidget(self.forward, seq)
+        h1.addWidget(self.right, seq)
+        h1.addWidget(self.stop, seq)
         b_layout = QVBoxLayout()
         b_layout.addWidget(self.bionic_on)
         b_layout.addWidget(self.bionic_off)
-        h1.addLayout(b_layout)
-        u_d_l = QVBoxLayout()
-        u_d_l.addWidget(self.up_left)
-        u_d_l.addWidget(self.down_left)
-        h1.addLayout(u_d_l)
-        u_d_r = QVBoxLayout()
-        u_d_r.addWidget(self.up_right)
-        u_d_r.addWidget(self.down_right)
-        h1.addLayout(u_d_r)
+        h1.addLayout(b_layout, seq)
+        # u_d_l = QVBoxLayout()
+        # u_d_l.addWidget(self.up_left)
+        # u_d_l.addWidget(self.down_left)
+        # h1.addLayout(u_d_l)
+        # u_d_r = QVBoxLayout()
+        # u_d_r.addWidget(self.up_right)
+        # u_d_r.addWidget(self.down_right)
+        # h1.addLayout(u_d_r)
+        h1.addWidget(self.splider, seq)
         h2.addWidget(self.Connect, seq)
         h2.addWidget(self.combobox, 8*seq)
         layout.addWidget(self.TextEdit, 5*seq)
@@ -142,10 +154,10 @@ class Socket(QtWidgets.QDialog):
         self.stop.clicked.connect(self.Stop)
         self.bionic_on.clicked.connect(self.Bionic_On)
         self.bionic_off.clicked.connect(self.Bionic_Off)
-        self.up_left.clicked.connect(lambda: self.Up(0))
-        self.down_left.clicked.connect(lambda: self.Down(0))
-        self.up_right.clicked.connect(lambda: self.Up(1))
-        self.down_right.clicked.connect(lambda: self.Down(1))
+        # self.up_left.clicked.connect(lambda: self.Up(0))
+        # self.down_left.clicked.connect(lambda: self.Down(0))
+        # self.up_right.clicked.connect(lambda: self.Up(1))
+        # self.down_right.clicked.connect(lambda: self.Down(1))
 
         self.clearFocus()
 
@@ -175,7 +187,7 @@ class Socket(QtWidgets.QDialog):
                 self.Socket_Connect.emit()
                 QtWidgets.QMessageBox.information(self, '提示', '连接成功')
                 self.Connect.setText('断开')
-                self.combobox.setEnabled(False)
+                # self.combobox.setEnabled(False)
             else:
                 QtWidgets.QMessageBox.information(self, '提示', '连接失败')
 
@@ -188,22 +200,22 @@ class Socket(QtWidgets.QDialog):
         QtWidgets.QMessageBox.information(self, '提示', '服务器断开')
 
     def Forward(self):
-        self.Socket_Send.emit((str((1 << 0, (self.forward.A, self.forward.k))) + '\n'))
+        self.Socket_Send.emit((str((1 << 0, (self.forward.A, self.forward.k, self.splider.value()))) + '\n'))
         # if self.Socket.state() == 3:
         #     self.Socket.write((str((1 << 0, (self.forward.A, self.forward.k))) + '\n').encode('utf-8'))
 
     def Left(self):
-        self.Socket_Send.emit((str((1 << 0, (self.left.A, self.left.k))) + '\n'))
+        self.Socket_Send.emit((str((1 << 0, (self.left.A, self.left.k, self.splider.value()))) + '\n'))
         # if self.Socket.state() == 3:
         #     self.Socket.write((str((1 << 0, (self.left.A, self.left.k))) + '\n').encode('utf-8'))
 
     def Right(self):
-        self.Socket_Send.emit((str((1 << 0, (self.right.A, self.right.k))) + '\n'))
+        self.Socket_Send.emit((str((1 << 0, (self.right.A, self.right.k, self.splider.value()))) + '\n'))
         # if self.Socket.state() == 3:
         #     self.Socket.write((str((1 << 0, (self.right.A, self.right.k))) + '\n').encode('utf-8'))
 
     def Stop(self):
-        self.Socket_Send.emit((str((1 << 0, (0, 0))) + '\n'))
+        self.Socket_Send.emit((str((1 << 0, (0, 0, self.splider.value()))) + '\n'))
         # if self.Socket.state() == 3:
         #     self.Socket.write((str((1 << 0, (0, 0))) + '\n').encode('utf-8'))
 
@@ -217,11 +229,15 @@ class Socket(QtWidgets.QDialog):
         # if self.Socket.state() == 3:
         #     self.Socket.write((str((1 << 0, 'Down_{}'.format(n))) + '\n').encode('utf-8'))
 
+    def Splider_Change(self):
+        self.Socket_Send.emit((str((1 << 0, (self.A, self.k, self.splider.value()))) + '\n'))
+
     def Bionic_On(self):
         self.Socket_Send.emit((str((1 << 8, True)) + '\n'))
 
     def Bionic_Off(self):
         self.Socket_Send.emit((str((1 << 8, False)) + '\n'))
+
 
     def Line_Clear(self):
         self.TextEdit.clear()
@@ -274,9 +290,16 @@ class Socket(QtWidgets.QDialog):
             elif str(event.key()) == '32':
                 self.Stop()
             elif str(event.key()) == '16777235':
-                self.Up(1)
+                value = self.splider.value()
+                if value < self.splider.maximum():
+                    self.splider.setValue(value + 1)
             elif str(event.key()) == '16777237':
-                self.Down(1)
+                if self.Socket.state() == 0:
+                    self.combobox.showPopup()
+                else:
+                    value = self.splider.value()
+                    if value > self.splider.minimum():
+                        self.splider.setValue(value - 1)
 
 
 # 运行程序

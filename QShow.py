@@ -12,6 +12,12 @@ from PyQt5.QtCore import QThread
 from PyQt5 import QtWidgets
 from streamDetectionPlot import streamDetectionPlot
 
+def sleep(duration, get_now=time.perf_counter):
+    now = get_now()
+    end = now + duration
+    while now <= end:
+        now = get_now()
+
 
 class Show(QtWidgets.QDialog):
     def __init__(self, parent=None):
@@ -76,10 +82,7 @@ class Show(QtWidgets.QDialog):
             v_distance = v - last_v
             coefs = np.zeros_like(v_distance)
             coefs[:] = coef
-            bias_t = 0
-            flag = False  # 用于计算时间偏差, 2个来回一次循环
             for i in range(1, self.num + 1):
-                cur_t = time.time()
                 weight = (i / self.num) ** coefs
                 cur_v = (weight * v_distance + last_v)
                 self.V.append(cur_v)
@@ -87,13 +90,8 @@ class Show(QtWidgets.QDialog):
                 self.Y.append(self.Y[-1] + cur_v[1] * t)
                 self.Z.append(self.Z[-1] + cur_v[2] * t)
                 self.R.append(r)
-                time.sleep(t - bias_t)
-                flag = not flag
-                if flag:
-                    temp_t = time.time() - cur_t - t
-                    bias_t = temp_t if temp_t < t else t
-                else:
-                    bias_t = 0
+                plt.pause(t/10)
+
                 if not self.Stream.pause:
                     if not self.clear:
                         self.Stream.DetectionPlot(self.X, self.Y, self.Z, self.R, self.V)

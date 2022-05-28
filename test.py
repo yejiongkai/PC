@@ -10,6 +10,7 @@ class Control_Manager(object):
     def __init__(self):
         self.mode = 1 << 0  # (1 << 0) 手动   (1 << 1) 路径巡航   (1 << 2) 视觉跟踪
         self.arg = None    # 最近一次获取的命令参数
+        self.A, self.k, self.c = 0, 0, 0
         self.cur_mode = 0
         self.route = None
         self.cur_route = 0
@@ -42,11 +43,11 @@ class Control_Manager(object):
     def Serial_Send(self, text):
         pass
 
-    def Servo_Send(self, a, k):
+    def Servo_Send(self, a, k, c):
         try:
             for s in self.inputs:
                 if s is not self.server:
-                    self.message_queues[s].put('(0, ({}, {}))'.format(int(a), int(k)) + '\n')
+                    self.message_queues[s].put('(0, ({}, {}, {}))'.format(int(a), int(k), int(c)) + '\n')
                     if s not in self.outputs:
                         self.outputs.append(s)
         except KeyError:
@@ -201,10 +202,10 @@ class Control_Manager(object):
                         A, k = self.route[self.cur_route]
                         self.cur_route += 1
                         print(A, k)
-                        self.Servo_Send(A, k)  # 跟踪算法
+                        self.Servo_Send(A, k, 0)  # 跟踪算法
                         time.sleep(2)
                 else:
-                    self.Servo_Send(0, 0)
+                    self.Servo_Send(0, 0, 0)
                 continue
 
             # 手动命令 参数 频率和K
@@ -221,6 +222,7 @@ class Control_Manager(object):
                     elif self.arg == 'Down_1':
                         self.Serial_Down(23)
                     else:
+                        self.A, self.k, self.c = self.arg
                         self.Servo_Send(*self.arg)    # 跟踪算法
                     self.cur_mode, self.arg = None, None
                     continue
