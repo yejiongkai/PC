@@ -33,9 +33,9 @@ class Control_Manager(object):
         time.sleep(random.random() + 1)
         self.Servo_Send(random.randint(2, 5),
                         random.choice([-1, 1])*random.choices([0, 5, 6, 7, 8],
-                        weights=[0.3, 0.3, 0.2, 0.1, 0.1])[0])
+                        weights=[0.3, 0.3, 0.2, 0.1, 0.1])[0], 0)
         time.sleep(random.random() + 1.5)
-        self.Servo_Send(0, 0)
+        self.Servo_Send(0, 0, 0)
         
     def Serial_Recv(self):
         return None

@@ -12,12 +12,6 @@ from PyQt5.QtCore import QThread
 from PyQt5 import QtWidgets
 from streamDetectionPlot import streamDetectionPlot
 
-def sleep(duration, get_now=time.perf_counter):
-    now = get_now()
-    end = now + duration
-    while now <= end:
-        now = get_now()
-
 
 class Show(QtWidgets.QDialog):
     def __init__(self, parent=None):
