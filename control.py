@@ -1,14 +1,11 @@
 import sys
-import numpy as np
-from PyQt5.QtWidgets import QListWidget, QStackedWidget, QDockWidget, QListWidgetItem, QWidget, \
-    QHBoxLayout, QApplication, QFrame
+from PyQt5.QtWidgets import QListWidget, QStackedWidget, QListWidgetItem, QHBoxLayout, QApplication, QFrame
 from PyQt5.QtCore import QSize, Qt
-from QSerial import Serial
-from Route import Drawer
-from QTCP import Socket
-from QTrack import Track
-from QShow import Show
-from QWave import Wave
+from Module.Route import Drawer
+from Module.QTCP import Socket
+from Module.QTrack import Track
+from Module.QShow import Show
+from Module.QWave import Wave
 
 
 class LeftTabWidget(QFrame):
@@ -23,10 +20,10 @@ class LeftTabWidget(QFrame):
         self._setup_ui()
 
     def _setup_ui(self):
-        with open('style.qss', 'r') as f:  # 导入QListWidget的qss样式
+        with open('./parameter/style.qss', 'r') as f:  # 导入QListWidget的qss样式
             self.list_style = f.read()
 
-        with open('./Ubuntu.qss', 'r', encoding='utf-8') as f:
+        with open('./parameter/Ubuntu.qss', 'r', encoding='utf-8') as f:
             self.setStyleSheet(f.read())
 
         self.setGeometry(400, 400, 800, 600)

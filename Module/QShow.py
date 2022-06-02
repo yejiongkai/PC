@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 # from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtCore import QThread
 from PyQt5 import QtWidgets
-from streamDetectionPlot import streamDetectionPlot
+from Module.streamDetectionPlot import streamDetectionPlot
 
 
 class Show(QtWidgets.QDialog):
@@ -40,18 +40,18 @@ class Show(QtWidgets.QDialog):
         thread.start()
 
     def Setting_Init(self):
-        if os.path.exists('./Show.txt'):
-            with open('./Show.txt', 'rb') as f:
+        if os.path.exists('./parameter/Show.txt'):
+            with open('./parameter/Show.txt', 'rb') as f:
                 settings = pickle.load(f)
                 self.alpha = settings['alpha']
                 self.beta = settings['beta']
         else:
-            with open('./Show.txt', 'wb') as f:
+            with open('./parameter/Show.txt', 'wb') as f:
                 settings = {'alpha': self.alpha, 'beta': self.beta}
                 pickle.dump(settings, f)
 
     def Setting_Save(self):
-        with open('./Show.txt', 'wb') as f:
+        with open('./parameter/Show.txt', 'wb') as f:
             settings = {'alpha': self.alpha, 'beta': self.beta}
             pickle.dump(settings, f)
 

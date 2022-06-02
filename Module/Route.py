@@ -41,11 +41,11 @@ class Drawer(QDialog):
         self.stroker.setWidth(3)
 
     def A_k_Init(self):
-        if os.path.exists('./A_k.txt'):
-            with open('./A_k.txt', 'r+') as f:
+        if os.path.exists('./parameter/A_k.txt'):
+            with open('./parameter/A_k.txt', 'r+') as f:
                 self.A_k = [eval(i[:-1]) for i in f.readlines()]
         else:
-            with open('./A_k.txt', 'w') as f:
+            with open('./parameter/A_k.txt', 'w') as f:
                 self.A_k = [(3, 0), (2, 5), (2, 7), (3, 5), (3, 7), (3, 9), (4, 7), (4, 9), (5, 7)]
                 f.writelines([str(i)+'\n' for i in self.A_k])
 

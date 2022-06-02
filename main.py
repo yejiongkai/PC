@@ -1,12 +1,9 @@
 from control import LeftTabWidget
-from QShow import Show
-from QWave import Wave
-from PyQt5.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QDockWidget, QTextEdit, QToolBar, QMenu, \
-                            QAction, QInputDialog, QSizePolicy
-from PyQt5.QtGui import QPixmap, QFont, QCursor
+from PyQt5.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QDockWidget, QToolBar, QMenu, \
+                            QAction, QInputDialog
+from PyQt5.QtGui import QCursor
 from PyQt5.QtCore import Qt, QPoint
 import sys
-import numpy as np
 
 
 class MainWindow(QMainWindow):
