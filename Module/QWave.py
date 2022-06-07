@@ -16,6 +16,7 @@ class Wave(QtWidgets.QDialog):
     def __init__(self, parent=None):
         # 父类初始化方法
         super(Wave, self).__init__(parent)
+        self.Close = False
         self.A, self.k = 0, 0
         # 几个QWidgets
         self.figure = Figure()
@@ -31,7 +32,7 @@ class Wave(QtWidgets.QDialog):
 
     def Plot(self):
         fun = lambda a, k, x, t: (0.5 * (-k) * np.power(x, 2)) * np.sin(t * a)
-        while 1:
+        while not self.Close:
             if self.k == 0:
                 for t in np.linspace(0, (np.pi * 2 / self.A) if self.A != 0 else 1, (100 // self.A) if self.A != 0 else 1):
                     x = np.linspace(0, np.pi * 20, 50)
@@ -63,8 +64,6 @@ class Wave(QtWidgets.QDialog):
                     self.ax.autoscale_view()
                     self.canvas.draw()
                     plt.pause(0.01)
-
-
 
 
 # 运行程序

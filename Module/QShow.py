@@ -35,9 +35,9 @@ class Show(QtWidgets.QDialog):
 
         self.Setting_Init()
 
-        thread = QThread(self)
-        thread.run = self.Handle_Data
-        thread.start()
+        self.thread = QThread(self)
+        self.thread.run = self.Handle_Data
+        self.thread.start()
 
     def Setting_Init(self):
         if os.path.exists('./parameter/Show.txt'):
@@ -56,9 +56,7 @@ class Show(QtWidgets.QDialog):
             pickle.dump(settings, f)
 
     def Handle_Data(self):
-        while 1:
-            if self.Close:
-                break
+        while not self.Close:
             if self.A == 0:
                 self.vx, self.vy, self.vz = 0, 0, 0
             else:

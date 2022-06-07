@@ -66,6 +66,7 @@ class Control_Manager(object):
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.setblocking(0)
         ip_port = ('127.0.0.1', 3411)
+        # ip_port = ('192.168.137.1', 3411)
         self.server.bind(ip_port)
         self.server.listen(5)
         self.inputs.append(self.server)

@@ -1,21 +1,28 @@
 from control import LeftTabWidget
 from PyQt5.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QDockWidget, QToolBar, QMenu, \
-                            QAction, QInputDialog
-from PyQt5.QtGui import QCursor
+                            QAction, QInputDialog, qApp
+from PyQt5.QtGui import QCursor, QIcon
 from PyQt5.QtCore import Qt, QPoint
+from Module.QTray import TrayModel
 import sys
+import ctypes
+ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("myappid")
 
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
+        self.hide_normal = True
         self.Control = LeftTabWidget()
         self.Show = self.Control.Show
         self.Wave = self.Control.Wave
+        self.tray = TrayModel(self)
+        self.threads = [self.Show.thread, self.Wave.thread]
 
         self.setup_ui()
 
     def setup_ui(self):
+        self.setWindowIcon(QIcon('./win.ico'))
         self.setStyleSheet('font-size: 20px;font-family: "New Roman"')
         self.setGeometry(400, 400, 1000, 700)
         show_item = QDockWidget(self)
@@ -88,13 +95,37 @@ class MainWindow(QMainWindow):
             self.Show.Setting_Save()
 
     def closeEvent(self, a0) -> None:
+        if self.hide_normal:
+            a0.ignore()
+            self.hide()
+        else:
+            self.Control.Drawer.is_route = True
+            self.Control.Drawer.is_pause = False
+            self.Show.Close = True
+            self.Wave.Close = True
+            for thread in self.threads:
+                thread.wait()
+            qApp.exit(0)
+
+    def ResetEvent(self):
         self.Control.Drawer.is_route = True
         self.Control.Drawer.is_pause = False
         self.Show.Close = True
+        self.Wave.Close = True
+        for thread in self.threads:
+            thread.wait()
+        qApp.exit(1)
 
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    demo = MainWindow()
-    demo.show()
-    sys.exit(app.exec_())
+    status = 1
+    try:
+        app = QApplication(sys.argv)
+    except RuntimeError:
+        app = QApplication.instance()
+    while status:
+        demo = MainWindow()
+        demo.show()
+        status = app.exec_()
+        app.closeAllWindows()
+    sys.exit(status)

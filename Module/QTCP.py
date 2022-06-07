@@ -187,7 +187,7 @@ class Socket(QtWidgets.QDialog):
                 self.Socket_Connect.emit()
                 QtWidgets.QMessageBox.information(self, '提示', '连接成功')
                 self.Connect.setText('断开')
-                # self.combobox.setEnabled(False)
+                self.combobox.setEnabled(False)
             else:
                 QtWidgets.QMessageBox.information(self, '提示', '连接失败')
 
