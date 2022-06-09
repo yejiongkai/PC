@@ -7,7 +7,6 @@ import matplotlib
 import pickle
 matplotlib.use('Qt5Agg')
 import matplotlib.pyplot as plt
-# from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtCore import QThread
 from PyQt5 import QtWidgets
 from Module.streamDetectionPlot import streamDetectionPlot
