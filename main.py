@@ -1,7 +1,7 @@
 from control import LeftTabWidget
 from PyQt5.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QDockWidget, QToolBar, QMenu, \
-                            QAction, QInputDialog, qApp
-from PyQt5.QtGui import QCursor, QIcon
+                            QAction, QInputDialog, qApp, QGraphicsDropShadowEffect
+from PyQt5.QtGui import QCursor, QIcon, QColor
 from PyQt5.QtCore import Qt, QPoint
 from Module.QTray import TrayModel
 import sys
@@ -29,6 +29,7 @@ class MainWindow(QMainWindow):
         show_item.setContextMenuPolicy(3)
         show_item.customContextMenuRequested[QPoint].connect(lambda: self.showContextMenu(show_item))
         menu = QMenu(self)
+        self.SetMenuStyle(menu)
         show_item.contextMenu = menu
 
         wave_item = QDockWidget(self)
@@ -115,6 +116,24 @@ class MainWindow(QMainWindow):
         for thread in self.threads:
             thread.wait()
         qApp.exit(1)
+
+    def SetMenuStyle(self, menu):
+        with open('./parameter/menu.qss', 'r') as f:  # 导入QListWidget的qss样式
+            menu_style = f.read()
+
+        shadow = QGraphicsDropShadowEffect(menu)
+        shadow.setOffset(0, 0)
+        shadow.setColor(QColor('#444444'))
+        shadow.setBlurRadius(10)
+
+        menu.setStyleSheet(menu_style)
+        menu.setWindowFlags(menu.windowFlags() | Qt.FramelessWindowHint | Qt.NoDropShadowWindowHint)
+        menu.setAttribute(Qt.WA_TranslucentBackground)
+        menu.setGraphicsEffect(shadow)
+        menu_list = menu.actions()
+        for action in menu_list:
+            if action.menu():
+                self.SetMenuStyle(action.menu())
 
 
 if __name__ == '__main__':

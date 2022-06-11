@@ -10,15 +10,7 @@ class TrayModel(QSystemTrayIcon):
         self.Init_UI()
 
     def Init_UI(self):
-        with open('./parameter/menu.qss', 'r') as f:  # 导入QListWidget的qss样式
-            self.menu_style = f.read()
-
         self.menu = QMenu()
-
-        self.shadow = QGraphicsDropShadowEffect(self.menu)
-        self.shadow.setOffset(0, 0)
-        self.shadow.setColor(QColor('#444444'))  #
-        self.shadow.setBlurRadius(10)
 
         self.show_action = QAction('打开主面板', self, triggered=self.Show_Window)
         self.quit_action = QAction('退出', self, triggered=self.Quit_Window)
@@ -42,10 +34,18 @@ class TrayModel(QSystemTrayIcon):
         self.show()
 
     def SetMenuStyle(self, menu):
-        menu.setStyleSheet(self.menu_style)
+        with open('./parameter/menu.qss', 'r') as f:  # 导入QListWidget的qss样式
+            menu_style = f.read()
+
+        shadow = QGraphicsDropShadowEffect(menu)
+        shadow.setOffset(0, 0)
+        shadow.setColor(QColor('#444444'))
+        shadow.setBlurRadius(10)
+
+        menu.setStyleSheet(menu_style)
         menu.setWindowFlags(menu.windowFlags() | Qt.FramelessWindowHint | Qt.NoDropShadowWindowHint)
         menu.setAttribute(Qt.WA_TranslucentBackground)
-        menu.setGraphicsEffect(self.shadow)
+        menu.setGraphicsEffect(shadow)
         menu_list = menu.actions()
         for action in menu_list:
             if action.menu():

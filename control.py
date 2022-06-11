@@ -110,26 +110,6 @@ class LeftTabWidget(QFrame):
                     self.Show.A, self.Show.k, _ = data[1]
                     self.Wave.A, self.Wave.k, _ = data[1]
                     self.Socket.A, self.Socket.k, self.Socket.c = data[1]
-                    # if k == 0:
-                    #     self.theta = self.theta + k * self.alpha
-                    #     print(self.theta)
-                    #     self.Show.vx = A * np.cos(self.theta)
-                    #     self.Show.vy = A * np.sin(self.theta)
-                    #     self.Show.vz = 0
-                    # elif k > 0:
-                    #     self.theta = self.theta - k * self.alpha
-                    #     print(self.theta)
-                    #     self.Show.vx = A * np.cos(self.theta)
-                    #     print(self.Show.vx)
-                    #     self.Show.vy = A * np.sin(self.theta)
-                    #     print(self.Show.vy)
-                    #     self.Show.vz = 0
-                    # elif k < 0:
-                    #     self.theta = self.theta - k * self.alpha
-                    #     print(self.theta)
-                    #     self.Show.vx = A * np.cos(self.theta)
-                    #     self.Show.vy = A * np.sin(self.theta)
-                    #     self.Show.vz = 0
 
 
 def main():
